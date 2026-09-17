@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CATEGORIES, CATEGORY_LABELS } from '../../content.config';
+
+export async function getStaticPaths() {
+  return CATEGORIES.map((category) => ({ params: { category } }));
+}
+
+const { category } = Astro.params as { category: (typeof CATEGORIES)[number] };
+const label = CATEGORY_LABELS[category];
+
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const articles = allArticles
+  .filter((entry) => entry.data.category === category)
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+const descriptions: Record<(typeof CATEGORIES)[number], string> = {
+  taxes: 'Understand how income tax works in Austria, what a tax return is, and terms like Lohnsteuer and Steuererklärung.',
+  'social-insurance': 'What Austrian social insurance covers — health, accident, and unemployment — and terms like Sozialversicherung and ÖGK.',
+  banking: 'Opening a bank account, understanding fees, and everyday German banking vocabulary.',
+  pension: 'How the Austrian pension system works and what to know as a newcomer building up pension credit.',
+  'family-benefits': 'Financial support for families in Austria, including child benefit (Familienbeihilfe) and parental leave payments.',
+  investing: 'Plain-language basics on saving and investing in Austria, from savings accounts to simple funds.',
+};
+---
+
+<BaseLayout title={label} description={descriptions[category]} path={`/categories/${category}/`}>
+  <div class="container">
+    <div class="hero">
+      <span class="badge">Category</span>
+      <h1>{label}</h1>
+      <p class="lead">{descriptions[category]}</p>
+    </div>
+
+    {
+      articles.length > 0 ? (
+        <ul class="article-list">
+          {articles.map((entry) => (
+            <li>
+              <a href={`/articles/${entry.id}/`}>{entry.data.title}</a>
+              <p>{entry.data.description}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="prose">
+          We don't have an article in this category yet. Check back soon, or{' '}
+          <a href="/">browse other topics</a>.
+        </p>
+      )
+    }
+  </div>
+</BaseLayout>

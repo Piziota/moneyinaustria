@@ -1,0 +1,40 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { CATEGORY_LABELS } from '../content.config';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'articles'>;
+}
+
+const { entry } = Astro.props;
+const { title, description, category, publishDate, updatedDate } = entry.data;
+
+const dateFormat: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+---
+
+<BaseLayout title={title} description={description} path={`/articles/${entry.id}/`} type="article">
+  <article>
+    <div class="container">
+      <div class="article-header">
+        <a class="category-tag" href={`/categories/${category}/`}>{CATEGORY_LABELS[category]}</a>
+        <h1>{title}</h1>
+        <p class="article-meta">
+          Published <time datetime={publishDate.toISOString()}
+            >{publishDate.toLocaleDateString('en-GB', dateFormat)}</time
+          >
+          {
+            updatedDate && (
+              <>
+                {' '}· Updated <time datetime={updatedDate.toISOString()}>{updatedDate.toLocaleDateString('en-GB', dateFormat)}</time>
+              </>
+            )
+          }
+        </p>
+      </div>
+      <div class="article-body prose">
+        <slot />
+      </div>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CATEGORIES, CATEGORY_LABELS } from '../content.config';
+
+const categoryIcons: Record<(typeof CATEGORIES)[number], string> = {
+  taxes: '🧾',
+  'social-insurance': '🩺',
+  banking: '🏦',
+  pension: '👵',
+  'family-benefits': '👨‍👩‍👧',
+  investing: '📈',
+};
+
+const categoryBlurbs: Record<(typeof CATEGORIES)[number], string> = {
+  taxes: 'Income tax, tax returns, and what comes out of your paycheck.',
+  'social-insurance': 'Health, accident, and unemployment cover explained.',
+  banking: 'Opening an account and everyday banking terms.',
+  pension: 'How pension credit builds up over your working life.',
+  'family-benefits': 'Support payments for children and parents.',
+  investing: 'Saving and investing basics, in plain language.',
+};
+
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const recentArticles = allArticles
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+  .slice(0, 6);
+---
+
+<BaseLayout
+  title="Money in Austria"
+  description="Plain-English guides to taxes, insurance, banking, pensions, family benefits, and investing for immigrants living in Austria."
+  path="/"
+>
+  <div class="hero">
+    <div class="container">
+      <span class="badge">Made for newcomers</span>
+      <h1>Understand your money in Austria — in plain English.</h1>
+      <p class="lead">
+        Money in Austria explains how taxes, social insurance, banking, pensions, family
+        benefits, and investing actually work here — without jargon, and with every
+        German term explained the first time it appears.
+      </p>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Browse by topic</h2>
+    <div class="card-grid">
+      {
+        CATEGORIES.map((category) => (
+          <a class="card" href={`/categories/${category}/`}>
+            <span class="card-icon" aria-hidden="true">
+              {categoryIcons[category]}
+            </span>
+            <h3>{CATEGORY_LABELS[category]}</h3>
+            <p>{categoryBlurbs[category]}</p>
+          </a>
+        ))
+      }
+    </div>
+
+    {
+      recentArticles.length > 0 && (
+        <>
+          <h2>Recent articles</h2>
+          <ul class="article-list">
+            {recentArticles.map((entry) => (
+              <li>
+                <span class="category-tag">{CATEGORY_LABELS[entry.data.category]}</span>
+                <br />
+                <a href={`/articles/${entry.id}/`}>{entry.data.title}</a>
+                <p>{entry.data.description}</p>
+              </li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+  </div>
+</BaseLayout>

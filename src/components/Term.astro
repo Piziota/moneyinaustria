@@ -1,0 +1,14 @@
+---
+// Explains a German financial term on first use in an article.
+// Usage: <Term de="Meldezettel" en="registration certificate" />
+interface Props {
+  de: string;
+  en: string;
+}
+
+const { de, en } = Astro.props;
+---
+
+<strong class="term" lang="de" title={`${de}: ${en}`}
+  >{de}</strong
+> <span class="term-definition">({en})</span>

@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="This page doesn't exist. Return to Money in Austria to keep browsing financial guides for life in Austria."
+  path="/404/"
+>
+  <div class="container">
+    <div class="error-page prose">
+      <span class="badge">404</span>
+      <h1>We couldn't find that page.</h1>
+      <p>
+        The page you're looking for may have moved or no longer exists. Try heading
+        back to the homepage, or browse a topic below.
+      </p>
+      <p><a class="btn" href="/">Back to homepage</a></p>
+    </div>
+  </div>
+</BaseLayout>

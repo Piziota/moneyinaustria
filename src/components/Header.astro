@@ -1,0 +1,32 @@
+---
+import { CATEGORIES, CATEGORY_LABELS } from '../content.config';
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string) {
+  return href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+}
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-logo" href="/">
+      <span aria-hidden="true">🧭</span>
+      Money in Austria
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="/" aria-current={isActive('/') ? 'page' : undefined}>Home</a>
+      {
+        CATEGORIES.map((category) => (
+          <a
+            href={`/categories/${category}/`}
+            aria-current={isActive(`/categories/${category}`) ? 'page' : undefined}
+          >
+            {CATEGORY_LABELS[category]}
+          </a>
+        ))
+      }
+      <a href="/about/" aria-current={isActive('/about') ? 'page' : undefined}>About</a>
+    </nav>
+  </div>
+</header>

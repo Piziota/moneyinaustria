@@ -1,0 +1,28 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  type?: 'website' | 'article';
+}
+
+const { title, description, path = Astro.url.pathname, type = 'website' } = Astro.props;
+
+const siteName = 'Money in Austria';
+const pageTitle = title === siteName ? title : `${title} · ${siteName}`;
+const canonicalUrl = new URL(path, Astro.site).toString();
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+<meta property="og:type" content={type} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:site_name" content={siteName} />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
