@@ -1,11 +1,13 @@
 ---
+import { siteConfig } from '../config/site';
+
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
   <div class="container site-footer__inner">
     <div class="disclaimer">
-      <strong>Not financial advice.</strong> Money in Austria is an independent, informational
+      <strong>Not financial advice.</strong> {siteConfig.siteName} is an independent, informational
       guide to help newcomers understand how money, taxes, and benefits work in Austria.
       It is written in plain English and is not a substitute for advice from a tax
       advisor (<em lang="de">Steuerberater</em>), lawyer, or your local social insurance
@@ -13,7 +15,7 @@ const year = new Date().getFullYear();
       making decisions.
     </div>
     <p class="footer-meta">
-      © {year} Money in Austria · <a href="/about/">About this project</a> ·
+      © {year} {siteConfig.siteName} · <a href="/about/">About this project</a> ·
       <a href="/impressum/">Impressum</a> · <a href="/privacy/">Privacy</a>
     </p>
   </div>

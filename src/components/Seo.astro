@@ -1,4 +1,6 @@
 ---
+import { siteConfig } from '../config/site';
+
 interface Props {
   title: string;
   description: string;
@@ -8,9 +10,9 @@ interface Props {
 
 const { title, description, path = Astro.url.pathname, type = 'website' } = Astro.props;
 
-const siteName = 'Money in Austria';
+const siteName = siteConfig.siteName;
 const pageTitle = title === siteName ? title : `${title} · ${siteName}`;
-const canonicalUrl = new URL(path, Astro.site).toString();
+const canonicalUrl = new URL(path, siteConfig.siteUrl).toString();
 ---
 
 <title>{pageTitle}</title>

@@ -1,5 +1,6 @@
 ---
 import { CATEGORIES, CATEGORY_LABELS } from '../content.config';
+import { siteConfig } from '../config/site';
 
 const currentPath = Astro.url.pathname;
 
@@ -12,7 +13,7 @@ function isActive(href: string) {
   <div class="container site-header__inner">
     <a class="site-logo" href="/">
       <span aria-hidden="true">🧭</span>
-      Money in Austria
+      {siteConfig.siteName}
     </a>
     <nav class="site-nav" aria-label="Main navigation">
       <a href="/" aria-current={isActive('/') ? 'page' : undefined}>Home</a>

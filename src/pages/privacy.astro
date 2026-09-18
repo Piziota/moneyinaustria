@@ -1,10 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import EmailLink from '../components/EmailLink.astro';
+import { siteConfig } from '../config/site';
 ---
 
 <BaseLayout
   title="Privacy Policy"
-  description="How Money in Austria handles data: what is collected (currently nothing), hosting via Cloudflare, and your rights under GDPR."
+  description={`How ${siteConfig.siteName} handles data: what is collected (currently nothing), hosting via Cloudflare, and your rights under GDPR.`}
   path="/privacy/"
 >
   <div class="container">
@@ -20,9 +22,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="prose" style="padding-block: 1rem 3rem;">
       <h2>Data controller</h2>
       <p>
-        PLACEHOLDER_NAME<br />
-        PLACEHOLDER_ADDRESS<br />
-        Email: <a href="mailto:PLACEHOLDER_EMAIL">PLACEHOLDER_EMAIL</a>
+        {siteConfig.ownerName}<br />
+        {siteConfig.address}<br />
+        {siteConfig.postalCode} {siteConfig.city}, {siteConfig.country}<br />
+        Email: <EmailLink email={siteConfig.email} />
       </p>
 
       <h2>What this website collects</h2>

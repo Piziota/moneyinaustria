@@ -1,10 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import EmailLink from '../components/EmailLink.astro';
+import { siteConfig } from '../config/site';
 ---
 
 <BaseLayout
   title="Impressum"
-  description="Legal disclosure (Impressum) for Money in Austria under the Austrian E-Commerce Act and Media Act."
+  description={`Legal disclosure (Impressum) for ${siteConfig.siteName} under the Austrian E-Commerce Act and Media Act.`}
   path="/impressum/"
 >
   <div class="container">
@@ -20,14 +22,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="prose" style="padding-block: 1rem 3rem;">
       <h2>Site owner</h2>
       <p>
-        PLACEHOLDER_NAME<br />
-        PLACEHOLDER_ADDRESS<br />
-        Email: <a href="mailto:PLACEHOLDER_EMAIL">PLACEHOLDER_EMAIL</a>
+        {siteConfig.ownerName}<br />
+        {siteConfig.address}<br />
+        {siteConfig.postalCode} {siteConfig.city}, {siteConfig.country}<br />
+        Email: <EmailLink email={siteConfig.email} />
       </p>
 
       <h2>Purpose of this website</h2>
       <p>
-        Money in Austria is a private, non-commercial website. It is run for
+        {siteConfig.siteName} is a private, non-commercial website. It is run for
         informational purposes only, does not sell products or advertising
         space, and does not generate revenue. It exists to help newcomers
         understand how everyday financial matters — taxes, social insurance,

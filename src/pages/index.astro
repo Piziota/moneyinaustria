@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { CATEGORIES, CATEGORY_LABELS } from '../content.config';
+import { siteConfig } from '../config/site';
 
 const categoryIcons: Record<(typeof CATEGORIES)[number], string> = {
   taxes: '🧾',
@@ -28,7 +29,7 @@ const recentArticles = allArticles
 ---
 
 <BaseLayout
-  title="Money in Austria"
+  title={siteConfig.siteName}
   description="Plain-English guides to taxes, insurance, banking, pensions, family benefits, and investing for immigrants living in Austria."
   path="/"
 >

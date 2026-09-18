@@ -1,0 +1,15 @@
+---
+import { obfuscateEmail } from '../utils/obfuscateEmail';
+
+interface Props {
+  email: string;
+  text?: string;
+}
+
+const { email, text } = Astro.props;
+const href = obfuscateEmail(`mailto:${email}`);
+const label = obfuscateEmail(text ?? email);
+const linkHtml = `<a href="${href}">${label}</a>`;
+---
+
+<Fragment set:html={linkHtml} />
