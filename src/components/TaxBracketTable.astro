@@ -1,0 +1,77 @@
+---
+import { TAX_RATES, CURRENT_TAX_YEAR } from '../data/tax-rates';
+
+const rates = TAX_RATES[CURRENT_TAX_YEAR];
+
+const isSet = (n: number | null): n is number => n !== null && !Number.isNaN(n);
+
+function formatEUR(n: number): string {
+  return new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+}
+
+function formatRate(n: number): string {
+  return isSet(n) ? `${(n * 100).toLocaleString('en-IE')}%` : 'TODO_VERIFY';
+}
+
+let from = 0;
+let chainBroken = false;
+const rows = rates.incomeTax.brackets.map((bracket, i) => {
+  const rowFrom = chainBroken ? null : from;
+  if (bracket.upTo === null) {
+    from = Infinity;
+  } else if (isSet(bracket.upTo)) {
+    from = bracket.upTo;
+  } else {
+    chainBroken = true;
+  }
+  return { index: i + 1, from: rowFrom, to: bracket.upTo, rate: bracket.rate };
+});
+
+const anyUnset = rows.some((r) => r.from === null || !isSet(r.rate) || (r.to !== null && !isSet(r.to)));
+---
+
+<div class="prose">
+  <h2>Income tax brackets ({rates.year})</h2>
+
+  {
+    anyUnset && (
+      <div class="callout">
+        <p>
+          These figures are placeholders. The site owner hasn't verified this
+          year's brackets against an official source yet, so treat every
+          "TODO_VERIFY" below as unknown, not zero.
+        </p>
+      </div>
+    )
+  }
+
+  <div class="table-scroll">
+    <table class="tax-table">
+      <thead>
+        <tr>
+          <th scope="col">Bracket</th>
+          <th scope="col">Annual income range</th>
+          <th scope="col">Marginal rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr>
+              <td>{row.index}</td>
+              <td>
+                {row.from === null ? 'TODO_VERIFY' : formatEUR(row.from)} to{' '}
+                {row.to === null ? 'and above' : isSet(row.to) ? formatEUR(row.to) : 'TODO_VERIFY'}
+              </td>
+              <td>{formatRate(row.rate)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="article-meta">
+    Source to verify against: <a href={rates.incomeTax.sourceUrl}>{rates.incomeTax.sourceUrl}</a>
+  </p>
+</div>

@@ -367,8 +367,135 @@ li {
   color: #fff;
 }
 
+/* Tax bracket table + calculator result table */
+.table-scroll {
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.tax-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.tax-table th,
+.tax-table td {
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tax-table thead th {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.tax-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Glossary */
+.glossary {
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.glossary-item {
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.glossary-item dt {
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+}
+
+.glossary-item dt strong {
+  color: var(--color-primary-dark);
+}
+
+.glossary-item dd {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* Calculator */
+.calculator-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.calculator-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 24rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.form-field label {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-primary-dark);
+}
+
+.form-field input,
+.form-field select {
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  width: 100%;
+}
+
+.form-field input:focus-visible,
+.form-field select:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+.calculator-form .btn {
+  border: none;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.calculator-result {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.calculator-result h3 {
+  margin-top: 0;
+}
+
+.calculator-result ol {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+}
+
 @media (max-width: 40rem) {
   .site-footer__inner {
     padding-block: 2rem;
+  }
+
+  .calculator-form {
+    max-width: none;
   }
 }

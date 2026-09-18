@@ -2,6 +2,9 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { CATEGORIES, CATEGORY_LABELS } from '../../content.config';
+import TaxBracketTable from '../../components/TaxBracketTable.astro';
+import TaxGlossary from '../../components/TaxGlossary.astro';
+import GrossNetCalculator from '../../components/GrossNetCalculator.astro';
 
 export async function getStaticPaths() {
   return CATEGORIES.map((category) => ({ params: { category } }));
@@ -48,6 +51,16 @@ const descriptions: Record<(typeof CATEGORIES)[number], string> = {
           We don't have an article in this category yet. Check back soon, or{' '}
           <a href="/">browse other topics</a>.
         </p>
+      )
+    }
+
+    {
+      category === 'taxes' && (
+        <Fragment>
+          <TaxBracketTable />
+          <GrossNetCalculator />
+          <TaxGlossary />
+        </Fragment>
       )
     }
   </div>

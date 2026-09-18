@@ -1,0 +1,143 @@
+---
+---
+
+<div class="prose">
+  <h2>Gross to net calculator</h2>
+
+  <div class="callout">
+    <p>
+      This calculator runs entirely in your browser. Nothing you type into
+      it is sent to any server, saved, or logged anywhere, including by us.
+    </p>
+  </div>
+
+  <div class="calculator-card">
+    <form id="gross-net-form" class="calculator-form">
+      <div class="form-field">
+        <label for="gross-monthly">Gross monthly salary (EUR)</label>
+        <input type="number" id="gross-monthly" name="gross-monthly" min="0" step="0.01" placeholder="e.g. 3000" required />
+      </div>
+
+      <div class="form-field">
+        <label for="payments-per-year">Payments per year</label>
+        <select id="payments-per-year" name="payments-per-year">
+          <option value="14" selected>14 (12 monthly plus 13th and 14th salary)</option>
+          <option value="12">12 (no 13th/14th salary)</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn">Calculate</button>
+    </form>
+
+    <div id="gross-net-unconfigured" class="callout" hidden>
+      <p>
+        This calculator isn't ready yet. The tax and social insurance
+        figures in <code>src/data/tax-rates.ts</code> are still
+        placeholders and need to be verified against an official source
+        before this can compute a real number.
+      </p>
+    </div>
+
+    <div id="gross-net-result" class="calculator-result" hidden></div>
+  </div>
+
+  <h3>Assumptions</h3>
+  <ul>
+    <li>You're a standard private-sector employee (Angestellte/Arbeiter) insured under ASVG, not self-employed or a civil servant.</li>
+    <li>No church tax, no voluntary extra insurance, no benefits in kind (like a company car).</li>
+    <li>Only the automatic allowances listed in <code>tax-rates.ts</code> are applied. Anything you'd need to actively claim, such as the Familienbonus Plus or Pendlerpauschale, is not included.</li>
+    <li>Austrian tax and social insurance rates are federally uniform, so there's no state or region to select.</li>
+  </ul>
+
+  <div class="callout">
+    <p>
+      <strong>Estimate only, not tax advice.</strong> This is a simplified
+      model of a standard payslip, not a substitute for your actual payslip,
+      your employer's payroll department, or a <em lang="de">Steuerberater</em>
+      (tax advisor). Individual circumstances vary; use this to get a
+      general sense of your net pay, not a figure to plan around exactly.
+    </p>
+  </div>
+</div>
+
+<script>
+  import { calculateGrossToNet, formatEUR, type GrossNetResult } from '../utils/grossNetCalculator';
+  import { TAX_RATES, CURRENT_TAX_YEAR } from '../data/tax-rates';
+  import type { PaymentsPerYear } from '../utils/grossNetCalculator';
+
+  const rates = TAX_RATES[CURRENT_TAX_YEAR];
+  const form = document.getElementById('gross-net-form') as HTMLFormElement | null;
+  const resultEl = document.getElementById('gross-net-result') as HTMLDivElement | null;
+  const unconfiguredEl = document.getElementById('gross-net-unconfigured') as HTMLDivElement | null;
+
+  function renderResult(result: GrossNetResult): string {
+    const breakdownRows = result.socialInsuranceBreakdown
+      .map((line) => `<tr><td>${line.label}</td><td>${formatEUR(line.amount)}</td></tr>`)
+      .join('');
+
+    let html = `
+      <h3>Net monthly pay: ${formatEUR(result.netMonthly)}</h3>
+      <div class="table-scroll">
+        <table class="tax-table">
+          <tbody>
+            <tr><td>Gross monthly</td><td>${formatEUR(result.grossMonthly)}</td></tr>
+            ${breakdownRows}
+            <tr><td>Social insurance (total)</td><td>${formatEUR(result.socialInsuranceMonthly)}</td></tr>
+            <tr><td>Wage tax</td><td>${formatEUR(result.wageTaxMonthly)}</td></tr>
+            <tr><td><strong>Net monthly</strong></td><td><strong>${formatEUR(result.netMonthly)}</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4>How this was calculated</h4>
+      <ol>${result.steps.map((s) => `<li>${s}</li>`).join('')}</ol>
+    `;
+
+    if (result.specialPayment) {
+      html += `<h3>13th / 14th salary payment (estimate)</h3>`;
+      if (result.specialPayment.configured) {
+        html += `
+          <div class="table-scroll">
+            <table class="tax-table">
+              <tbody>
+                <tr><td>Gross</td><td>${formatEUR(result.specialPayment.grossPerPayment)}</td></tr>
+                <tr><td>Social insurance</td><td>${formatEUR(result.specialPayment.socialInsurance)}</td></tr>
+                <tr><td>Wage tax</td><td>${formatEUR(result.specialPayment.wageTax)}</td></tr>
+                <tr><td><strong>Net</strong></td><td><strong>${formatEUR(result.specialPayment.netPerPayment)}</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ol>${result.specialPayment.steps.map((s) => `<li>${s}</li>`).join('')}</ol>
+        `;
+      } else {
+        html += `<p>${result.specialPayment.steps.join(' ')}</p>`;
+      }
+    }
+
+    return html;
+  }
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const grossInput = document.getElementById('gross-monthly') as HTMLInputElement | null;
+    const paymentsInput = document.getElementById('payments-per-year') as HTMLSelectElement | null;
+    if (!grossInput || !paymentsInput || !resultEl || !unconfiguredEl) return;
+
+    const grossMonthly = Number(grossInput.value);
+    const paymentsPerYear = Number(paymentsInput.value) as PaymentsPerYear;
+
+    if (!Number.isFinite(grossMonthly) || grossMonthly <= 0) return;
+
+    const result = calculateGrossToNet({ grossMonthly, paymentsPerYear }, rates);
+
+    if (!result.configured) {
+      resultEl.hidden = true;
+      unconfiguredEl.hidden = false;
+      return;
+    }
+
+    unconfiguredEl.hidden = true;
+    resultEl.hidden = false;
+    resultEl.innerHTML = renderResult(result);
+  });
+</script>

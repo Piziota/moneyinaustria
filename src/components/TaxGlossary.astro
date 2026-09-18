@@ -1,0 +1,85 @@
+---
+interface GlossaryTerm {
+  german: string;
+  english: string;
+  explanation: string;
+}
+
+const terms: GlossaryTerm[] = [
+  {
+    german: 'Brutto',
+    english: 'gross',
+    explanation:
+      "What your employer agrees to pay before anything is deducted. This is the number in your job contract.",
+  },
+  {
+    german: 'Netto',
+    english: 'net',
+    explanation: 'What actually lands in your bank account after wage tax and social insurance are deducted.',
+  },
+  {
+    german: 'Lohnsteuer',
+    english: 'wage tax',
+    explanation:
+      'The income tax withheld from your salary automatically every month. Your employer calculates it and sends it directly to the tax office; you never handle it yourself.',
+  },
+  {
+    german: 'Sozialversicherung',
+    english: 'social insurance',
+    explanation:
+      'A combined monthly contribution that funds health care, your pension, and unemployment support. Like wage tax, it is deducted automatically from every payslip.',
+  },
+  {
+    german: 'Höchstbeitragsgrundlage',
+    english: 'contribution ceiling',
+    explanation:
+      'The maximum monthly income that social insurance is calculated on. Above this amount, no extra social insurance is withheld, so very high earners pay social insurance on a smaller share of their total income.',
+  },
+  {
+    german: 'Arbeitnehmerveranlagung',
+    english: 'employee tax assessment',
+    explanation:
+      "The annual tax return for employees. Filing it recalculates your tax based on your whole year and often results in a refund. It can never result in owing more tax than what was already withheld.",
+  },
+  {
+    german: 'Sonderzahlungen',
+    english: '13th and 14th salary',
+    explanation:
+      'Two extra monthly payments, usually one around summer and one around Christmas, that most Austrian employees receive on top of their 12 regular salaries. They are taxed more favorably than a normal month.',
+  },
+  {
+    german: 'Absetzbetrag',
+    english: 'tax credit',
+    explanation:
+      'An amount subtracted directly from the tax you owe, after your tax has already been calculated. This is different from a Freibetrag, which reduces your income before the tax is calculated in the first place.',
+  },
+  {
+    german: 'Freibetrag',
+    english: 'tax allowance',
+    explanation:
+      'An amount of income that is not taxed at all. It lowers the income your tax gets calculated on, rather than lowering the tax bill afterward like an Absetzbetrag does.',
+  },
+  {
+    german: 'Steuerklasse',
+    english: 'tax class',
+    explanation:
+      "Austria does not use a German-style system of numbered tax classes. If you've come across \"tax class\" somewhere, that usually refers to Germany, not Austria. Here, wage tax is worked out individually for each employee based on things like family allowances you actively claim, not a fixed class number.",
+  },
+];
+---
+
+<div class="prose">
+  <h2>Glossary</h2>
+  <dl class="glossary">
+    {
+      terms.map((term) => (
+        <div class="glossary-item">
+          <dt>
+            <strong lang="de">{term.german}</strong> ({term.english})
+          </dt>
+          <dd>{term.explanation}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>
