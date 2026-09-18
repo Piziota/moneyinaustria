@@ -5,7 +5,7 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://moneyinaustria.com',
+  site: 'https://moneyinaustria.at',
   output: 'static',
   integrations: [sitemap(), mdx()],
 });
