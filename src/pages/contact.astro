@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EmailLink from '../components/EmailLink.astro';
+import { siteConfig } from '../config/site';
+---
+
+<BaseLayout
+  title="Contact"
+  description={`Get in touch with ${siteConfig.siteName} by email.`}
+  path="/contact/"
+>
+  <div class="container">
+    <div class="hero">
+      <span class="badge">Contact</span>
+      <h1>Get in touch</h1>
+      <p class="lead">
+        Spotted something unclear, out of date, or wrong? Send an email and
+        we'll take a look.
+      </p>
+    </div>
+
+    <div class="prose" style="padding-block: 1rem 3rem;">
+      <p>
+        Email: <EmailLink email={siteConfig.email} />
+      </p>
+      <p>
+        We read every message but this is a small, independent project, so
+        replies may take a little while. See our
+        <a href="/privacy/">privacy policy</a> for what happens to messages
+        sent to this address.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
