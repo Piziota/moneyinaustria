@@ -1,4 +1,7 @@
 ---
+import { TAX_RATES, CURRENT_TAX_YEAR } from '../data/tax-rates';
+
+const rates = TAX_RATES[CURRENT_TAX_YEAR];
 ---
 
 <div class="prose">
@@ -26,6 +29,14 @@
         </select>
       </div>
 
+      <div class="form-field">
+        <label for="region">Where you're insured</label>
+        <select id="region" name="region">
+          <option value="vienna" selected>Vienna</option>
+          <option value="restOfAustria">Rest of Austria</option>
+        </select>
+      </div>
+
       <button type="submit" class="btn">Calculate</button>
     </form>
 
@@ -43,11 +54,12 @@
 
   <h3>Assumptions</h3>
   <ul>
-    <li>You're a standard private-sector employee (Angestellte/Arbeiter) insured under ASVG, not self-employed or a civil servant.</li>
-    <li>No church tax, no voluntary extra insurance, no benefits in kind (like a company car).</li>
-    <li>Only the automatic allowances listed in <code>tax-rates.ts</code> are applied. Anything you'd need to actively claim, such as the Familienbonus Plus or Pendlerpauschale, is not included.</li>
-    <li>Austrian tax and social insurance rates are federally uniform, so there's no state or region to select.</li>
+    <li>In scope: {rates.scope.inScope}</li>
+    <li>Vienna raised its employee Wohnbauförderungsbeitrag share from 0.5% to 0.75% on 1 January 2026; select "Rest of Austria" above if you're insured elsewhere, since Vienna is currently the only Bundesland with a different rate.</li>
+    <li>Out of scope: {rates.scope.outOfScope.join('; ')}.</li>
+    <li>Only the Verkehrsabsetzbetrag is applied automatically. Anything you'd need to actively claim, such as the Familienbonus Plus, an increased Verkehrsabsetzbetrag, or the Pendlerpauschale, is not included.</li>
   </ul>
+  <p class="article-meta">Figures last verified: {rates.lastVerified}. See <code>docs/AUSTRIA-TAX-DATA-2026.md</code> for sources.</p>
 
   <div class="callout">
     <p>
@@ -63,7 +75,7 @@
 <script>
   import { calculateGrossToNet, formatEUR, type GrossNetResult } from '../utils/grossNetCalculator';
   import { TAX_RATES, CURRENT_TAX_YEAR } from '../data/tax-rates';
-  import type { PaymentsPerYear } from '../utils/grossNetCalculator';
+  import type { PaymentsPerYear, Region } from '../utils/grossNetCalculator';
 
   const rates = TAX_RATES[CURRENT_TAX_YEAR];
   const form = document.getElementById('gross-net-form') as HTMLFormElement | null;
@@ -82,7 +94,7 @@
           <tbody>
             <tr><td>Gross monthly</td><td>${formatEUR(result.grossMonthly)}</td></tr>
             ${breakdownRows}
-            <tr><td>Social insurance (total)</td><td>${formatEUR(result.socialInsuranceMonthly)}</td></tr>
+            <tr><td>Social insurance and payroll levies (total)</td><td>${formatEUR(result.socialInsuranceMonthly)}</td></tr>
             <tr><td>Wage tax</td><td>${formatEUR(result.wageTaxMonthly)}</td></tr>
             <tr><td><strong>Net monthly</strong></td><td><strong>${formatEUR(result.netMonthly)}</strong></td></tr>
           </tbody>
@@ -93,16 +105,17 @@
     `;
 
     if (result.specialPayment) {
-      html += `<h3>13th / 14th salary payment (estimate)</h3>`;
+      html += `<h3>13th &amp; 14th salary, combined (per year)</h3>`;
       if (result.specialPayment.configured) {
         html += `
           <div class="table-scroll">
             <table class="tax-table">
               <tbody>
-                <tr><td>Gross</td><td>${formatEUR(result.specialPayment.grossPerPayment)}</td></tr>
-                <tr><td>Social insurance</td><td>${formatEUR(result.specialPayment.socialInsurance)}</td></tr>
-                <tr><td>Wage tax</td><td>${formatEUR(result.specialPayment.wageTax)}</td></tr>
-                <tr><td><strong>Net</strong></td><td><strong>${formatEUR(result.specialPayment.netPerPayment)}</strong></td></tr>
+                <tr><td>Combined gross</td><td>${formatEUR(result.specialPayment.combinedGrossAnnual)}</td></tr>
+                <tr><td>Social insurance</td><td>${formatEUR(result.specialPayment.socialInsuranceAnnual)}</td></tr>
+                <tr><td>Wage tax</td><td>${formatEUR(result.specialPayment.wageTaxAnnual)}</td></tr>
+                <tr><td><strong>Net, combined</strong></td><td><strong>${formatEUR(result.specialPayment.netAnnual)}</strong></td></tr>
+                <tr><td>≈ net per payment</td><td>${formatEUR(result.specialPayment.netPerPaymentEstimate)}</td></tr>
               </tbody>
             </table>
           </div>
@@ -121,14 +134,16 @@
 
     const grossInput = document.getElementById('gross-monthly') as HTMLInputElement | null;
     const paymentsInput = document.getElementById('payments-per-year') as HTMLSelectElement | null;
-    if (!grossInput || !paymentsInput || !resultEl || !unconfiguredEl) return;
+    const regionInput = document.getElementById('region') as HTMLSelectElement | null;
+    if (!grossInput || !paymentsInput || !regionInput || !resultEl || !unconfiguredEl) return;
 
     const grossMonthly = Number(grossInput.value);
     const paymentsPerYear = Number(paymentsInput.value) as PaymentsPerYear;
+    const region = regionInput.value as Region;
 
     if (!Number.isFinite(grossMonthly) || grossMonthly <= 0) return;
 
-    const result = calculateGrossToNet({ grossMonthly, paymentsPerYear }, rates);
+    const result = calculateGrossToNet({ grossMonthly, paymentsPerYear, region }, rates);
 
     if (!result.configured) {
       resultEl.hidden = true;
